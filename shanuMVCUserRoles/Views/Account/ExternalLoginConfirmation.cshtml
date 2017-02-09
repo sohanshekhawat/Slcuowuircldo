@@ -1,0 +1,122 @@
+﻿@model shanuMVCUserRoles.Models.ExternalLoginConfirmationViewModel
+@{
+    ViewBag.Title = "Register";
+}
+<h2>@ViewBag.Title.</h2>
+<h3>Associate your @ViewBag.LoginProvider account.</h3>
+
+
+
+@using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <p class="text-info">
+        We will <strong>NOT</strong> post anything on your facebook wall.
+        Please fill below information to complete your registration.
+    </p>
+
+    <div class="form-group">
+        <div class="col-md-10">
+
+            @if (String.IsNullOrWhiteSpace(Model.UserPhoto))
+            {
+                <input type="file" name="UserPhoto" id="fileUpload" accept=".png,.jpg,.jpeg,.gif,.tif" placeholder="Upload Profile Photo" required="required" oninvalid="this.setCustomValidity('Profile photo is required')" />
+                @Html.ValidationMessageFor(model => model.UserPhoto, "", new { @class = "text-danger" })
+            }
+            else
+            {
+                <img src="@Model.UserPhoto" name="UserPhoto" />
+                @Html.HiddenFor(m => m.UserPhoto)
+            }
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="col-md-10">
+            @Html.DropDownList("UserRoles", (SelectList)ViewBag.AccountTypes, "--Select Account Type--", new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.UserRoles), @onchange = "HideShowControls()" })
+            @Html.ValidationMessageFor(model => model.UserRoles, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-10">
+            @Html.DropDownList("SanghtanId", (SelectList)ViewBag.Sanghtans, "-Select Sanghtan-", new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.SanghtanId), @data_val_required = "Please select a Sanghtan", @data_val = "true" })
+            @Html.ValidationMessageFor(model => model.SanghtanId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.Name) })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-10">
+            @if (String.IsNullOrWhiteSpace(Model.Email))
+            {
+
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+
+            }
+            else
+            {
+            @Html.HiddenFor(m => m.Email)
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+
+            @if (String.IsNullOrWhiteSpace(Model.Phone))
+                {
+            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.Phone) })
+            @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+            }
+            else
+            {
+            @Html.HiddenFor(m => m.Phone)
+            }
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Register" />
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            HideShowControls();
+        });
+
+        function HideShowControls() {
+            var userRoleValue = $('#UserRoles').val();
+
+            if ($("#UserRoles").val() != "Author") {
+                $("#SanghtanId").prop("disabled", true);
+                $("#SanghtanId").prop('required', false);
+                $("#Name").prop("placeholder", 'Sanghtan name');
+            }
+            else {
+                $("#SanghtanId").prop("disabled", false);
+                $("#SanghtanId").prop('required', true);
+                $("#Name").prop("placeholder", 'Full name');
+            }
+        }
+    </script>
+}

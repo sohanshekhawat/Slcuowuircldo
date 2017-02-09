@@ -1,0 +1,344 @@
+﻿@using shanuMVCUserRoles.Models
+@model shanuMVCUserRoles.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    /*.img-container img {
+      max-width: 100%;
+    }*/
+
+    .modal-dialog {
+        width: 600px !important;
+        margin: auto !important;
+        left: 50% !important;
+        right: 50% !important;
+        position: static !important;
+        max-height:600px;
+    }
+
+    /*label {
+        clear: left;
+        margin-left: 50px;
+        float: left;
+        width: 5em;
+    }*/
+
+    #testWrap {
+        width: 500px;
+        float: left;
+        margin: 20px 0 0 50px; /* Just while testing, to make sure we return the correct positions for the image & not the window */
+    }
+
+    #previewArea {
+        margin: 20px 0 0 20px;
+        float: left;
+    }
+
+    #results {
+        clear: both;
+    }
+
+    .row,
+    .preview {
+        overflow: hidden;
+    }
+
+    .col {
+        float: left;
+    }
+
+    .col-6 {
+        width: 50%;
+        margin: 5px;
+    }
+
+    .col-3 {
+        width: 25%;
+        margin: 5px;
+    }
+
+    .col-2 {
+        width: 16.7%;
+        margin: 5px;
+    }
+
+    .col-1 {
+        width: 8.3%;
+        margin: 5px;
+    }
+
+    .ui-dialog {
+        width: 50% !important;
+        top: 15% !important;
+    }
+</style>
+
+<h4>New Registration.</h4>
+<hr />
+
+<div>
+    <section id="socialLoginForm">
+        @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+    </section>
+    <h4> -- OR --</h4>
+</div>
+
+<hr />
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.DropDownList("UserRoles", (SelectList)ViewBag.AccountTypes, "--Select Account Type--", new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.UserRoles), @onchange = "HideShowControls()" })
+                @Html.ValidationMessageFor(model => model.UserRoles, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.DropDownList("SanghtanId", (SelectList)ViewBag.Sanghtans, "-Select Sanghtan-", new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.SanghtanId), @data_val_required = "Please select a Sanghtan", @data_val = "true" })
+                @Html.ValidationMessageFor(model => model.SanghtanId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="file" name="UserPhoto" id="fileUpload" accept=".png,.jpg,.jpeg,.gif,.tif" onselect="onFileSelect()" placeholder="Upload Profile Photo" required="required" oninvalid="this.setCustomValidity('Profile photo is required')" />
+                @Html.ValidationMessageFor(model => model.UserPhoto, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-10">
+                <div style="margin: 5px 10px;overflow:hidden;">
+                    <img id="image_main" style="opacity:0.5;filter:alpha(opacity=80);" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.Name) })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.Email) })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.Phone) })
+                @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.Password) })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = @Html.DisplayNameFor(n => n.ConfirmPassword) })
+                @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="submit" class="btn btn-default" value="Register" />
+            </div>
+        </div>
+    </div>
+
+}
+
+<!-- Modal -->
+<div class="modal fade" id="modal" aria-labelledby="modalLabel" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Crop the image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <img id="image" src="../docs/images/picture.jpg" alt="Picture">
+                </div>
+                <div class="col col-3" id="preview_1">
+                    <div class="preview"></div>
+                </div>
+                <div class="col col-2">
+                    <div class="preview"></div>
+                </div>
+                <div class="col col-1">
+                    <div class="preview"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="saveCrop()">Save & Crop</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="../Scripts/cropper/jquery-3.1.1.slim.min.js"></script>
+    <script src="~/Scripts/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../Scripts/cropper/cropper.js"></script>
+    <link href="~/Scripts/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../Scripts/cropper/cropper.css">
+
+    <script type="text/javascript">
+
+        var _width = null;
+        var _height = null;
+        var _marginLeft = null;
+        var _marginTop = null;
+        var fileData = null;
+
+        function setImageCrop() {
+
+            $(function () {
+                var $previews = $('.preview');
+
+                $('#image').cropper({
+                    ready: function (e) {
+                        var $clone = $(this).clone().removeClass('cropper-hidden');
+
+                        $clone.css({
+                            display: 'block',
+                            width: '100%',
+                            minWidth: 0,
+                            minHeight: 0,
+                            maxWidth: 'none',
+                            maxHeight: 'none'
+                        });
+
+                        $previews.css({
+                            width: '100%',
+                            overflow: 'hidden'
+                        }).html($clone);
+                    },
+
+                    crop: function (e) {
+                        var imageData = $(this).cropper('getImageData');
+                        var previewAspectRatio = e.width / e.height;
+                        var count = 0;
+
+                        _width = 0;
+                        _height = 0;
+                        _marginLeft = 0;
+                        _marginTop = 0;
+
+                        $previews.each(function () {
+                            var $preview = $(this);
+                            var previewWidth = $preview.width();
+                            var previewHeight = previewWidth / previewAspectRatio;
+                            var imageScaledRatio = e.width / previewWidth;
+
+
+                            if (count == 0) {
+                                _width = imageData.naturalWidth / imageScaledRatio;
+                                _height = imageData.naturalHeight / imageScaledRatio;
+                                _marginLeft = -e.x / imageScaledRatio;
+                                _marginTop = -e.y / imageScaledRatio;
+                                count++;
+                            }
+                            $preview.height(previewHeight).find('img').css({
+                                width: imageData.naturalWidth / imageScaledRatio,
+                                height: imageData.naturalHeight / imageScaledRatio,
+                                marginLeft: -e.x / imageScaledRatio,
+                                marginTop: -e.y / imageScaledRatio
+                            });
+                        });
+
+                    }
+                });
+            });
+        };
+
+        $(function () {
+
+
+            $("input:file").change(function () {
+                var fileName = $(this).val();
+
+                var file = $("input:file")[0].files[0];
+
+                if (file) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        fileData = "data:application/octet-stream;base64," + $.trim(reader.result.split(',')[1]);
+                        $('#image').attr("src", fileData);
+                        setTimeout(function () {
+                            setImageCrop();
+                        }, 500);
+                        //$("#dialog").dialog();
+                        $('#modal').modal('toggle');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        function saveCrop() {
+
+            $('#image_main').attr("src", fileData).css({
+                "width": _width,
+                "height": _height,
+
+                "margin-left": _marginLeft,
+                "margin-top": _marginTop,
+            });
+            $("#image").cropper('destroy');
+            $('.preview').html('');
+            $('#modal').modal('toggle');
+
+            //$("#dialog").dialog("close");
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            HideShowControls();
+        });
+
+        function HideShowControls() {
+            var userRoleValue = $('#UserRoles').val();
+
+            if ($("#UserRoles").val() != "Author") {
+                $("#SanghtanId").prop("disabled", true);
+                $("#SanghtanId").prop('required', false);
+                $("#Name").prop("placeholder", 'Sanghtan name');
+            }
+            else {
+                $("#SanghtanId").prop("disabled", false);
+                $("#SanghtanId").prop('required', true);
+                $("#Name").prop("placeholder", 'Full name');
+            }
+        }
+    </script>
+
+}
+
+
+

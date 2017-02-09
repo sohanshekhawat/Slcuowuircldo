@@ -1,0 +1,75 @@
+﻿@model shanuMVCUserRoles.Models.Blog
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Blog</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.BlogTitle)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BlogTitle)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BlogContent)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BlogContent)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CategoryId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CategoryId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AuthorId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AuthorId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SanghtanId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SanghtanId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BlogImage)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BlogImage)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.BlogId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
